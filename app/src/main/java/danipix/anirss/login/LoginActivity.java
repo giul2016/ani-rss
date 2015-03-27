@@ -15,7 +15,7 @@ import android.widget.Toast;
 import danipix.anirss.DashboardActivity;
 import danipix.anirss.R;
 import danipix.anirss.constants.Constants;
-import danipix.anirss.rest.service.SyncService;
+
 
 
 public class LoginActivity extends ActionBarActivity {
@@ -32,7 +32,7 @@ public class LoginActivity extends ActionBarActivity {
 
         mContext = getApplicationContext();
         mSharedPreferences = getSharedPreferences(Constants.ANI_RSS, MODE_PRIVATE);
-        SyncService.performSync(mContext);
+
         if (!mSharedPreferences.getString(Constants.PERSON_SIGNED_IN_EMAIL, "N/A").equals("N/A")) {
             Intent intent = new Intent(mContext, DashboardActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
