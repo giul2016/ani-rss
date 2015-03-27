@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 
-import danipix.anirss.base.ModuleBase;
 import danipix.anirss.rest.service.RestClient;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -14,7 +13,7 @@ import retrofit.client.Response;
 /**
  * Created by Dani Pix on 3/9/2015.
  */
-public class UserModule extends ModuleBase {
+public class UserModule {
 
 
     private static UserModule instance;

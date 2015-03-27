@@ -26,6 +26,5 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.afollestad:material-dialogs:0.6.4.7'
-
-
+    compile 'com.android.support:appcompat-v7:22.0.0'
 }

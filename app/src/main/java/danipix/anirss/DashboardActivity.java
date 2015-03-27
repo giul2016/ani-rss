@@ -9,13 +9,12 @@ import android.view.MenuItem;
 
 import danipix.anirss.constants.Constants;
 import danipix.anirss.rest.service.HttpTask;
-import danipix.anirss.rest.service.SyncStatusReceiver;
 import danipix.anirss.user.UserModule;
 
 
 public class DashboardActivity extends ActionBarActivity {
 
-    private SyncStatusReceiver mSyncStatusReceiver;
+
     private boolean mSyncing = false;
     private boolean resumed = false;
     private ProgressDialog mProgressDialog;
@@ -30,7 +29,7 @@ public class DashboardActivity extends ActionBarActivity {
         String authToken = sharedPreferences.getString(Constants.PERSON_AUTH_TOKEN, "N/A");
 
         HttpTask httpTask = new HttpTask(DashboardActivity.this);
-        httpTask.execute();
+        httpTask.execute("GetUser");
 
     }
 

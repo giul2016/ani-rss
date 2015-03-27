@@ -12,20 +12,19 @@ import retrofit.client.Response;
 /**
  * Created by Dani Pix on 3/11/2015.
  */
-public class HttpTask extends AsyncTask<String, Void, Void> {
+public class HttpTask extends AsyncTask<String, Void, RestClient> {
 
     private Context mContext;
     private ProgressDialog mProgressDialog;
 
+
     public HttpTask(Context context) {
         mContext = context;
     }
-    RestClient restClient = RestClient.getInstance();
 
 
-
-    private void getUserData1(){
-        restClient.getApiService().getUserLibrary("DaniPix", new Callback<User>() {
+    private void getUserData() {
+        RestClient.getInstance().getApiService().getUserLibrary("DaniPix", new Callback<User>() {
             @Override
             public void success(User user, Response response) {
 
@@ -37,69 +36,13 @@ public class HttpTask extends AsyncTask<String, Void, Void> {
             }
         });
     }
-    private void getUserData2(){
-        restClient.getApiService().getUserLibrary("DaniPix", new Callback<User>() {
-            @Override
-            public void success(User user, Response response) {
-
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-
-            }
-        });
-    }
-    private void getUserData3(){
-        restClient.getApiService().getUserLibrary("DaniPix", new Callback<User>() {
-            @Override
-            public void success(User user, Response response) {
-
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-
-            }
-        });
-    }
-    private void getUserData4(){
-        restClient.getApiService().getUserLibrary("DaniPix", new Callback<User>() {
-            @Override
-            public void success(User user, Response response) {
-
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-
-            }
-        });
-    }
-    private void getUserData5(){
-        restClient.getApiService().getUserLibrary("DaniPix", new Callback<User>() {
-            @Override
-            public void success(User user, Response response) {
-
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-
-            }
-        });
-    }
-
 
     @Override
-    protected Void doInBackground(String... params) {
+    protected RestClient doInBackground(String... params) {
 
-        getUserData1();
-        getUserData2();
-        getUserData3();
-        getUserData4();
-        getUserData5();
-
+        if (params[0].equals("GetUser")) {
+            getUserData();
+        }
 
         return null;
     }
@@ -111,11 +54,12 @@ public class HttpTask extends AsyncTask<String, Void, Void> {
         mProgressDialog.show();
         mProgressDialog.setMessage("Synchronizing...");
         mProgressDialog.setCancelable(false);
+
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
+    protected void onPostExecute(RestClient result) {
+        super.onPostExecute(result);
         mProgressDialog.dismiss();
     }
 }
