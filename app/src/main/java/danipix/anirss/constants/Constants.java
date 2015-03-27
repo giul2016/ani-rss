@@ -6,6 +6,6 @@ package danipix.anirss.constants;
 public interface Constants {
 
     public static final String ANI_RSS = "ani_rss";
-    public static final String PERSON_SIGNED_IN_EMAIL = "person_signed_in";
-    public static final String PERSON_AUTH_TOKEN = "person_auth_token";
+    public static final String USER_EMAIL = "user_email";
+    public static final String USER_AUTH_TOKEN = "user_auth_token";
 }

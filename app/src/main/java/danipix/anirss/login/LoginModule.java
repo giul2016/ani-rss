@@ -1,9 +1,5 @@
 package danipix.anirss.login;
 
-import android.content.Context;
-
-import com.google.gson.Gson;
-
 import danipix.anirss.rest.service.RestClient;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -12,11 +8,9 @@ import retrofit.client.Response;
 /**
  * Created by Dani Pix on 2/7/2015.
  */
-public class LoginModule{
+public class LoginModule {
 
-    private Context mContext;
     private OnLoginListener mOnLoginListener;
-    private Gson mGson;
     private static LoginModule instance;
 
     private LoginModule() {
@@ -30,12 +24,11 @@ public class LoginModule{
         return instance;
     }
 
-    public LoginModule(Context context, OnLoginListener onLoginListener) {
-        mContext = context;
+    public LoginModule(OnLoginListener onLoginListener) {
         mOnLoginListener = onLoginListener;
     }
 
-    public void generateAuthenticationToken(final String email, String password, Context context) {
+    public void generateAuthenticationToken(final String email, String password) {
         if (credentialsValidation(email, password)) {
             RestClient restClient = RestClient.getInstance();
 
@@ -50,7 +43,6 @@ public class LoginModule{
                     mOnLoginListener.onLoginFailed(error.getMessage());
                 }
             });
-
 
         } else {
             mOnLoginListener.onLoginFailed("Your credentials are not valid.");

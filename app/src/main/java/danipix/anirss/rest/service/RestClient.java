@@ -28,5 +28,4 @@ public class RestClient {
     public ApiService getApiService() {
         return apiService;
     }
-
 }

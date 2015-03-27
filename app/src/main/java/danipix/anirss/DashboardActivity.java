@@ -26,7 +26,7 @@ public class DashboardActivity extends ActionBarActivity {
         setContentView(R.layout.activity_dashboard);
         mProgressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.ANI_RSS, MODE_PRIVATE);
-        String authToken = sharedPreferences.getString(Constants.PERSON_AUTH_TOKEN, "N/A");
+        String authToken = sharedPreferences.getString(Constants.USER_AUTH_TOKEN, "N/A");
 
         HttpTask httpTask = new HttpTask(DashboardActivity.this);
         httpTask.execute("GetUser");
