@@ -1,36 +1,140 @@
 package danipix.anirss;
 
-import android.app.ProgressDialog;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import danipix.anirss.constants.Constants;
-import danipix.anirss.rest.service.HttpTask;
-import danipix.anirss.user.UserModule;
+import danipix.anirss.rest.model.IntentConstants;
+import danipix.anirss.rest.service.OnSyncListener;
+import danipix.anirss.rest.service.SyncService;
+import danipix.anirss.rest.service.SyncStatusReceiver;
+import danipix.anirss.ui.WheelProgressDialog;
 
 
 public class DashboardActivity extends ActionBarActivity {
 
-
+    private SyncStatusReceiver mSyncStatusReceiver;
     private boolean mSyncing = false;
-    private boolean resumed = false;
-    private ProgressDialog mProgressDialog;
-    UserModule mUserModule;
+    private boolean mResumed = false;
+    //public static ProgressDialog mProgressDialog;
+    public static WheelProgressDialog wheelProgressDialog;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        overridePendingTransition(0, 0);
+        mResumed = true;
+        if (mSyncing) {
+       //     mProgressDialog.show();
+            wheelProgressDialog.show();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
+        mResumed = false;
+      //  mProgressDialog.dismiss();
+        wheelProgressDialog.dismiss();
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter mStartIntentFilter = new IntentFilter(IntentConstants.START_SYNC);
+        IntentFilter mStopIntentFilter = new IntentFilter(IntentConstants.STOP_SYNC);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mSyncStatusReceiver, mStartIntentFilter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mSyncStatusReceiver, mStopIntentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSyncStatusReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-        mProgressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+
+        SyncService.startSync(DashboardActivity.this);
+
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.ANI_RSS, MODE_PRIVATE);
         String authToken = sharedPreferences.getString(Constants.USER_AUTH_TOKEN, "N/A");
 
-        HttpTask httpTask = new HttpTask(DashboardActivity.this);
-        httpTask.execute("GetUser");
+        Button syncBtn = (Button) findViewById(R.id.syncBtn);
+        syncBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SyncService.startSync(DashboardActivity.this);
+            }
+        });
 
+     //   mProgressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+    //    mProgressDialog.setProgressNumberFormat("%1d");
+    //    mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    //    mProgressDialog.setCancelable(false);
+    /*
+        if (SyncService.syncTriggeredFlag) {
+            mProgressDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                    MyThreadPoolExecutor poolExecutor = MyThreadPoolExecutor.getInstance();
+
+                    poolExecutor.shutdownNow();
+                    MyThreadPoolExecutor.setInstance();
+                    SyncService.refreshRunning();
+                    HttpTask.refreshCounter();
+                    dialogInterface.dismiss();
+                }
+            });
+        }
+        */
+
+
+        wheelProgressDialog = new WheelProgressDialog(this, R.style.MyTheme);
+        wheelProgressDialog.progress(0);
+        wheelProgressDialog.message("Synchronizing...").show();
+        wheelProgressDialog.setCancelable(false);
+
+
+
+
+        mSyncStatusReceiver = new SyncStatusReceiver(new OnSyncListener() {
+            @Override
+            public void onSyncStart() {
+                mSyncing = true;
+                if (mResumed) {
+                 //   mProgressDialog.show();
+                    wheelProgressDialog.show();
+                }
+            }
+
+            @Override
+            public void onSyncStop() {
+                mSyncing = false;
+                if (mResumed) {
+                //    mProgressDialog.dismiss();
+                    wheelProgressDialog.dismiss();
+                }
+            }
+        });
     }
 
 

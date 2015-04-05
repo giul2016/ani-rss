@@ -1,9 +1,9 @@
 package danipix.anirss.rest.service;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
+import danipix.anirss.DashboardActivity;
 import danipix.anirss.user.User;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -12,17 +12,15 @@ import retrofit.client.Response;
 /**
  * Created by Dani Pix on 3/11/2015.
  */
-public class HttpTask extends AsyncTask<String, Void, RestClient> {
+public class HttpTask extends AsyncTask<Void, Integer, Void> {
+    private int numberOfTasks = 10;
+    public static int counter;
 
-    private Context mContext;
-    private ProgressDialog mProgressDialog;
-
-
-    public HttpTask(Context context) {
-        mContext = context;
+    public static void refreshCounter(){
+        counter = 0;
     }
 
-
+    private OnProgressListener mOnProgressListener;
     private void getUserData() {
         RestClient.getInstance().getApiService().getUserLibrary("DaniPix", new Callback<User>() {
             @Override
@@ -38,28 +36,41 @@ public class HttpTask extends AsyncTask<String, Void, RestClient> {
     }
 
     @Override
-    protected RestClient doInBackground(String... params) {
-
-        if (params[0].equals("GetUser")) {
-            getUserData();
+    protected Void doInBackground(Void... params) {
+        numberOfTasks = SyncService.getNumberOfTasks();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e){
+            e.getMessage();
         }
+        Log.d("Thread", "Threading");
 
+        //DashboardActivity.mProgressDialog.setProgress(((numberOfTasks + counter) - numberOfTasks));
+        DashboardActivity.wheelProgressDialog.progress(((numberOfTasks + counter) - numberOfTasks));
+        counter += 10;
         return null;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        mProgressDialog = new ProgressDialog(mContext, ProgressDialog.STYLE_SPINNER);
-        mProgressDialog.show();
-        mProgressDialog.setMessage("Synchronizing...");
-        mProgressDialog.setCancelable(false);
+        if (mOnProgressListener != null) {
+            mOnProgressListener.onProgressStart("User Module");
+        }
 
     }
 
     @Override
-    protected void onPostExecute(RestClient result) {
+    protected void onPostExecute(Void result) {
         super.onPostExecute(result);
-        mProgressDialog.dismiss();
+        if (mOnProgressListener != null) {
+            mOnProgressListener.onProgressStop("User Module");
+            mOnProgressListener = null;
+        }
+    }
+
+
+    public void setOnProgressListener(OnProgressListener onProgressListener) {
+        mOnProgressListener = onProgressListener;
     }
 }

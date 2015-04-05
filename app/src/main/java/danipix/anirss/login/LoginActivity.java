@@ -15,7 +15,7 @@ import android.widget.Toast;
 import danipix.anirss.DashboardActivity;
 import danipix.anirss.R;
 import danipix.anirss.constants.Constants;
-
+import danipix.anirss.rest.service.SyncService;
 
 
 public class LoginActivity extends ActionBarActivity {
@@ -79,6 +79,7 @@ public class LoginActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 userSignIn();
+
             }
         });
 
@@ -99,6 +100,7 @@ public class LoginActivity extends ActionBarActivity {
         String strEmail = email.getText().toString();
         String strPassword = password.getText().toString();
         mLoginModule.generateAuthenticationToken(strEmail, strPassword);
+        SyncService.startSync(LoginActivity.this);
     }
 
     private void userSignUp() {
