@@ -18,7 +18,7 @@ public class MyThreadPoolExecutor extends ThreadPoolExecutor {
     }
 
     public MyThreadPoolExecutor() {
-        super(1, 128, 0, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<Runnable>());
+        super(10, 128, 0, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<Runnable>());
     }
 
     public static void setInstance(){

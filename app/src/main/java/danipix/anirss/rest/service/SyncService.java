@@ -15,21 +15,13 @@ import danipix.anirss.user.UserModule;
  */
 public class SyncService extends IntentService {
     private LocalBroadcastManager mLocalBroadcastManager;
-    public static int running = 0;
+    public int running = 0;
     UserModule mUserModule;
-    public static boolean syncTriggeredFlag = false;
 
     public SyncService() {
         super("");
     }
 
-    public static void refreshRunning(){
-        running = 0;
-    }
-
-    public static int getNumberOfTasks(){
-        return running;
-    }
 
     private OnProgressListener onProgressListener = new OnProgressListener() {
         @Override
@@ -45,7 +37,6 @@ public class SyncService extends IntentService {
             if (running == 0) {
                 Intent localIntent = new Intent(IntentConstants.STOP_SYNC);
                 mLocalBroadcastManager.sendBroadcast(localIntent);
-                HttpTask.refreshCounter();
             }
         }
     };
@@ -76,28 +67,19 @@ public class SyncService extends IntentService {
 
 
             if (syncUserData) {
-                for(int i = 0; i < 10; i++){
                     mUserModule.requestUserData();
-                }
             }
         }
     }
 
 
     public static void startSync(Context context) {
-        syncTriggeredFlag = true;
+
         Intent serviceIntent = new Intent(context, SyncService.class);
         Bundle bundle = new Bundle();
         bundle.putBoolean(IntentConstants.SYNC_USER_DATA, true);
         serviceIntent.putExtras(bundle);
         context.startService(serviceIntent);
     }
-
-    public static void stopSync(Context context) {
-        Intent serviceIntent = new Intent(context, SyncService.class);
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(IntentConstants.SYNC_USER_DATA, false);
-        serviceIntent.putExtras(bundle);
-        context.stopService(serviceIntent);
-    }
 }
+

@@ -18,6 +18,8 @@ import danipix.anirss.constants.AniRssItemsContract;
 public class AniRssContentProvider extends ContentProvider {
     private static final int USER_INFORMATION_LIST = 1;
     private static final int USER_INFORMATION_ID = 2;
+    private static final int USER_FAVORITES_LIST = 3;
+    private static final int USER_FAVORITES_ID = 4;
 
     private static final UriMatcher URI_MATCHER;
 
@@ -30,6 +32,14 @@ public class AniRssContentProvider extends ContentProvider {
         URI_MATCHER.addURI(AniRssItemsContract.AUTHORITY,
                 AniRssItemsContract.UserInformation.USER_INFORMATION_TABLE + "/#",
                 USER_INFORMATION_ID);
+
+        URI_MATCHER.addURI(AniRssItemsContract.AUTHORITY,
+                AniRssItemsContract.UserFavorites.USER_FAVORITES_TABLE,
+                USER_FAVORITES_LIST);
+        URI_MATCHER.addURI(AniRssItemsContract.AUTHORITY,
+                AniRssItemsContract.UserFavorites.USER_FAVORITES_TABLE + "/#",
+                USER_FAVORITES_ID);
+
     }
 
     private DatabaseHelper databaseHelper;
@@ -54,6 +64,20 @@ public class AniRssContentProvider extends ContentProvider {
                 // Limit query to one row at most.
                 builder.appendWhere(AniRssItemsContract.UserInformation.USER_ID + " = " +
                         uri.getLastPathSegment());
+                break;
+
+            case USER_FAVORITES_LIST:
+                builder.setTables(AniRssItemsContract.UserFavorites.USER_FAVORITES_TABLE);
+                if (TextUtils.isEmpty(sortOrder)) {
+                    sortOrder = AniRssItemsContract.UserFavorites.SORT_ORDER_DEFAULT;
+                }
+                break;
+            case USER_FAVORITES_ID:
+                builder.setTables(AniRssItemsContract.UserFavorites.USER_FAVORITES_TABLE);
+                builder.appendWhere(AniRssItemsContract.UserFavorites.ITEM_ID + " = " +
+                        uri.getLastPathSegment());
+                break;
+
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
@@ -77,6 +101,10 @@ public class AniRssContentProvider extends ContentProvider {
                 return AniRssItemsContract.UserInformation.CONTENT_TYPE;
             case USER_INFORMATION_ID:
                 return AniRssItemsContract.UserInformation.CONTENT_ITEM_TYPE;
+            case USER_FAVORITES_LIST:
+                return AniRssItemsContract.UserFavorites.CONTENT_TYPE;
+            case USER_FAVORITES_ID:
+                return AniRssItemsContract.UserFavorites.CONTENT_ITEM_TYPE;
             default:
                 throw new IllegalArgumentException("Unsupported URI from type: " + uri);
         }
@@ -84,7 +112,7 @@ public class AniRssContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        if (URI_MATCHER.match(uri) != USER_INFORMATION_LIST) {
+        if (URI_MATCHER.match(uri) != USER_INFORMATION_LIST && URI_MATCHER.match(uri) != USER_FAVORITES_LIST) {
             throw new IllegalArgumentException("Unsupported URI for insertion into database: " + uri);
         }
         SQLiteDatabase database = databaseHelper.getWritableDatabase();
@@ -92,6 +120,11 @@ public class AniRssContentProvider extends ContentProvider {
         switch (URI_MATCHER.match(uri)) {
             case USER_INFORMATION_LIST:
                 id = database.insert(AniRssItemsContract.UserInformation.USER_INFORMATION_TABLE, null, values);
+                database.close();
+                return getUriForId(id, uri);
+
+            case USER_FAVORITES_LIST:
+                id = database.insert(AniRssItemsContract.UserFavorites.USER_FAVORITES_TABLE, null, values);
                 database.close();
                 return getUriForId(id, uri);
 
@@ -124,6 +157,21 @@ public class AniRssContentProvider extends ContentProvider {
                 deleteCount = database.delete(AniRssItemsContract.UserInformation.USER_INFORMATION_TABLE, where, selectionArgs);
                 database.close();
                 break;
+
+            case USER_FAVORITES_LIST:
+                deleteCount = database.delete(AniRssItemsContract.UserFavorites.USER_FAVORITES_TABLE, selection, selectionArgs);
+                database.close();
+                break;
+            case USER_FAVORITES_ID:
+                idStr = uri.getLastPathSegment();
+                where = AniRssItemsContract.UserFavorites.ITEM_ID + " = " + idStr;
+                if (!TextUtils.isEmpty(selection)) {
+                    where += " AND " + selection;
+                }
+                deleteCount = database.delete(AniRssItemsContract.UserFavorites.USER_FAVORITES_TABLE, where, selectionArgs);
+                database.close();
+                break;
+
             default:
                 throw new IllegalArgumentException("Unsupported URI at deletion: " + uri);
         }
@@ -154,6 +202,21 @@ public class AniRssContentProvider extends ContentProvider {
                 updateCount = database.update(AniRssItemsContract.UserInformation.USER_INFORMATION_TABLE, values, where, selectionArgs);
                 database.close();
                 break;
+
+            case USER_FAVORITES_LIST:
+                updateCount = database.update(AniRssItemsContract.UserFavorites.USER_FAVORITES_TABLE, values, selection, selectionArgs);
+                database.close();
+                break;
+            case USER_FAVORITES_ID:
+                idStr = uri.getLastPathSegment();
+                where = AniRssItemsContract.UserFavorites.ITEM_ID + " = " + idStr;
+                if (!TextUtils.isEmpty(selection)) {
+                    where += " AND " + selection;
+                }
+                updateCount = database.update(AniRssItemsContract.UserFavorites.USER_FAVORITES_TABLE, values, selection, selectionArgs);
+                database.close();
+                break;
+
             default:
                 throw new IllegalArgumentException("Unsupported URI at update: " + uri);
         }

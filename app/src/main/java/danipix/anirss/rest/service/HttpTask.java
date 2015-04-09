@@ -1,10 +1,11 @@
 package danipix.anirss.rest.service;
 
+import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
-import danipix.anirss.DashboardActivity;
+import danipix.anirss.user.DbUserAdapter;
 import danipix.anirss.user.User;
+import danipix.anirss.user.UserFavorites;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -13,19 +14,31 @@ import retrofit.client.Response;
  * Created by Dani Pix on 3/11/2015.
  */
 public class HttpTask extends AsyncTask<Void, Integer, Void> {
-    private int numberOfTasks = 10;
     public static int counter;
+    private DbUserAdapter dbUserAdapter;
 
-    public static void refreshCounter(){
-        counter = 0;
+    public HttpTask(Context context) {
+        dbUserAdapter = DbUserAdapter.getInstance(context);
     }
 
+
     private OnProgressListener mOnProgressListener;
+
     private void getUserData() {
         RestClient.getInstance().getApiService().getUserLibrary("DaniPix", new Callback<User>() {
             @Override
             public void success(User user, Response response) {
+                long userId = 0;
+                if (user.getFavorites().size() > 0) {
+                    userId = user.getFavorites().get(0).getUser_id();
+                }
+                String userName = user.getName();
+                /* If the user already is in database, just update with new stuff (like user_id if the user has any favorites */
+                dbUserAdapter.createUser(user, userId);
 
+                for (UserFavorites userFavorites : user.getFavorites()) {
+                    dbUserAdapter.createUserFavorites(userName, userFavorites);
+                }
             }
 
             @Override
@@ -37,17 +50,7 @@ public class HttpTask extends AsyncTask<Void, Integer, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-        numberOfTasks = SyncService.getNumberOfTasks();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e){
-            e.getMessage();
-        }
-        Log.d("Thread", "Threading");
-
-        //DashboardActivity.mProgressDialog.setProgress(((numberOfTasks + counter) - numberOfTasks));
-        DashboardActivity.wheelProgressDialog.progress(((numberOfTasks + counter) - numberOfTasks));
-        counter += 10;
+        getUserData();
         return null;
     }
 

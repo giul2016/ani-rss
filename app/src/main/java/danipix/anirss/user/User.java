@@ -24,7 +24,7 @@ public class User {
     private String title_language_preference;
     private String last_library_updated;
     private boolean following;
-    private List<Favorites> favorites;
+    private List<UserFavorites> favorites;
 
     public String getName() {
         return name;
@@ -162,11 +162,11 @@ public class User {
         this.following = following;
     }
 
-    public List<Favorites> getFavorites() {
+    public List<UserFavorites> getFavorites() {
         return favorites;
     }
 
-    public void setFavorites(List<Favorites> favorites) {
+    public void setFavorites(List<UserFavorites> favorites) {
         this.favorites = favorites;
     }
 }

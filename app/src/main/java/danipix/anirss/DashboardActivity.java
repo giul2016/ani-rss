@@ -1,5 +1,6 @@
 package danipix.anirss;
 
+import android.app.ProgressDialog;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,7 +16,6 @@ import danipix.anirss.rest.model.IntentConstants;
 import danipix.anirss.rest.service.OnSyncListener;
 import danipix.anirss.rest.service.SyncService;
 import danipix.anirss.rest.service.SyncStatusReceiver;
-import danipix.anirss.ui.WheelProgressDialog;
 
 
 public class DashboardActivity extends ActionBarActivity {
@@ -23,16 +23,16 @@ public class DashboardActivity extends ActionBarActivity {
     private SyncStatusReceiver mSyncStatusReceiver;
     private boolean mSyncing = false;
     private boolean mResumed = false;
-    //public static ProgressDialog mProgressDialog;
-    public static WheelProgressDialog wheelProgressDialog;
+    public static ProgressDialog mProgressDialog;
+
     @Override
     protected void onResume() {
         super.onResume();
         overridePendingTransition(0, 0);
         mResumed = true;
         if (mSyncing) {
-       //     mProgressDialog.show();
-            wheelProgressDialog.show();
+           mProgressDialog.show();
+
         }
     }
 
@@ -41,8 +41,8 @@ public class DashboardActivity extends ActionBarActivity {
         super.onPause();
         overridePendingTransition(0, 0);
         mResumed = false;
-      //  mProgressDialog.dismiss();
-        wheelProgressDialog.dismiss();
+       mProgressDialog.dismiss();
+
     }
 
 
@@ -85,35 +85,10 @@ public class DashboardActivity extends ActionBarActivity {
             }
         });
 
-     //   mProgressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
-    //    mProgressDialog.setProgressNumberFormat("%1d");
-    //    mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-    //    mProgressDialog.setCancelable(false);
-    /*
-        if (SyncService.syncTriggeredFlag) {
-            mProgressDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-
-                    MyThreadPoolExecutor poolExecutor = MyThreadPoolExecutor.getInstance();
-
-                    poolExecutor.shutdownNow();
-                    MyThreadPoolExecutor.setInstance();
-                    SyncService.refreshRunning();
-                    HttpTask.refreshCounter();
-                    dialogInterface.dismiss();
-                }
-            });
-        }
-        */
-
-
-        wheelProgressDialog = new WheelProgressDialog(this, R.style.MyTheme);
-        wheelProgressDialog.progress(0);
-        wheelProgressDialog.message("Synchronizing...").show();
-        wheelProgressDialog.setCancelable(false);
-
-
+        mProgressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+        mProgressDialog.setProgressNumberFormat("%1d");
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        mProgressDialog.setCancelable(false);
 
 
         mSyncStatusReceiver = new SyncStatusReceiver(new OnSyncListener() {
@@ -121,8 +96,8 @@ public class DashboardActivity extends ActionBarActivity {
             public void onSyncStart() {
                 mSyncing = true;
                 if (mResumed) {
-                 //   mProgressDialog.show();
-                    wheelProgressDialog.show();
+                    mProgressDialog.show();
+
                 }
             }
 
@@ -130,8 +105,8 @@ public class DashboardActivity extends ActionBarActivity {
             public void onSyncStop() {
                 mSyncing = false;
                 if (mResumed) {
-                //    mProgressDialog.dismiss();
-                    wheelProgressDialog.dismiss();
+                   mProgressDialog.dismiss();
+
                 }
             }
         });

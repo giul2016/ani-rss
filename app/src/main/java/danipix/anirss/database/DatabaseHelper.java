@@ -18,7 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_USER_INFORMATION_CREATE = "create table "
             + AniRssItemsContract.UserInformation.USER_INFORMATION_TABLE + " ("
-            + AniRssItemsContract.UserInformation.ID + " autoincrement integer not null,"
+            + AniRssItemsContract.UserInformation.ID + " integer primary key autoincrement,"
             + AniRssItemsContract.UserInformation.USER_ID + " integer,"
             + AniRssItemsContract.UserInformation.NAME + " text,"
             + AniRssItemsContract.UserInformation.WAIFU + " text,"
@@ -40,6 +40,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + AniRssItemsContract.UserInformation.FAVORITES + " text" + ");";
 
 
+    private static final String DB_USER_FAVORITES_CREATE = "create table "
+            + AniRssItemsContract.UserFavorites.USER_FAVORITES_TABLE + " ("
+            + AniRssItemsContract.UserFavorites.ID + " integer primary key autoincrement,"
+            + AniRssItemsContract.UserFavorites.USER_NAME + " text,"
+            + AniRssItemsContract.UserFavorites.USER_ID + " integer,"
+            + AniRssItemsContract.UserFavorites.ITEM_ID + " integer,"
+            + AniRssItemsContract.UserFavorites.ITEM_TYPE + " text,"
+            + AniRssItemsContract.UserFavorites.CREATED_AT + " text,"
+            + AniRssItemsContract.UserFavorites.UPDATED_AT + " text,"
+            + AniRssItemsContract.UserFavorites.FAV_RANK + " integer" + ");";
+
     private DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -54,6 +65,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DB_USER_INFORMATION_CREATE);
+        db.execSQL(DB_USER_FAVORITES_CREATE);
     }
 
     @Override
@@ -61,6 +73,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.w(DatabaseHelper.class.getName(), "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all data.");
 
         db.execSQL("DROP TABLE IF EXISTS " + AniRssItemsContract.UserInformation.USER_INFORMATION_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + AniRssItemsContract.UserFavorites.USER_FAVORITES_TABLE);
         onCreate(db);
     }
 
@@ -68,6 +81,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         if (database != null) {
             database.delete(AniRssItemsContract.UserInformation.USER_INFORMATION_TABLE, null, null);
+            database.delete(AniRssItemsContract.UserFavorites.USER_FAVORITES_TABLE, null, null);
         }
     }
 }

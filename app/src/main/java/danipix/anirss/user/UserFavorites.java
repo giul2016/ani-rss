@@ -3,7 +3,7 @@ package danipix.anirss.user;
 /**
  * Created by Dani Pix on 3/7/2015.
  */
-public class Favorites {
+public class UserFavorites {
 
     private long id;
     private long user_id;

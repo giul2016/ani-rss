@@ -31,7 +31,7 @@ public class UserModule extends BaseModule {
 
 
     public void requestUserData() {
-        HttpTask httpTask = new HttpTask();
+        HttpTask httpTask = new HttpTask(mContext);
         httpTask.setOnProgressListener(mOnProgressListener);
         httpTask.executeOnExecutor(MyThreadPoolExecutor.getInstance(), (Void[]) null);
     }

@@ -17,6 +17,9 @@ public class SyncStatusReceiver extends BroadcastReceiver {
         mOnSyncListener = onSyncListener;
     }
 
+    public SyncStatusReceiver(){
+
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {

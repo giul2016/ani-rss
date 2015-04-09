@@ -49,4 +49,31 @@ public class AniRssItemsContract {
                 LAST_LIBRARY_UPDATE, FOLLOWING, FAVORITES};
 
     }
+
+
+    public static final class UserFavorites {
+
+        public static final String ID = "id";
+        public static final String USER_NAME = "user_name";
+        public static final String USER_ID = "user_id";
+        public static final String ITEM_ID = "item_id";
+        public static final String ITEM_TYPE = "item_type";
+        public static final String CREATED_AT = "created_at";
+        public static final String UPDATED_AT = "updated_at";
+        public static final String FAV_RANK = "fav_rank";
+
+        public static final String USER_FAVORITES_TABLE = "user_favorites";
+
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/danipix.anirss" + USER_FAVORITES_TABLE;
+
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/danipix.anirss" + USER_FAVORITES_TABLE;
+
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(AniRssItemsContract.CONTENT_URI, USER_FAVORITES_TABLE);
+
+        public static final String[] PROJECTION_ALL = {USER_NAME, USER_ID, ITEM_ID, ITEM_TYPE, CREATED_AT, UPDATED_AT, FAV_RANK};
+
+        public static final String SORT_ORDER_DEFAULT = CREATED_AT + " ASC";
+
+    }
+
 }
